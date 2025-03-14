@@ -1,18 +1,32 @@
 import React, { useState } from 'react';
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
+import supabase from '../supabase/supabase';
 
 const LoginC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Lógica de autenticación aquí
-    console.log('Login attempt with:', email);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
 
-    window.location.href = '/home';
+      if (error) {
+        alert('Error al iniciar sesión: ' + error.message);
+        return;
+      }
 
+      if (data.user) {
+        alert('¡Inicio de sesión exitoso!');
+        window.location.href = '/home';
+      }
+    } catch (error) {
+      alert('Error inesperado: ' + error.message);
+    }
   };
 
   return (
